@@ -3,5 +3,5 @@
 
 business needs: : automated this task with the power of machine learning. In this notebook, we will build an automatic credit card approval predictor using machine learning techniques, just like the real banks do.
 
-deployment : python file ready to production with piplines, stremit for a web application work in my localhost, then docker to make a container for our environment, then host our container in azure.
+deployment : python file ready to production with piplines, streamlit for a web application work in my localhost, then docker to make a container for our environment, then host our container in azure.
 now : we in the docker step.
