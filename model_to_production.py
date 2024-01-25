@@ -20,11 +20,15 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import cross_val_score
 
 import pickle
-import joblib
 
 # %%
 # Load dataset
 df = pd.read_csv('datasets/cc_approvals.data',header=None)
+
+# %%
+
+print(df[3].value_counts())
+
 
 # %%
 X = df.drop([15] , axis=1)
@@ -46,6 +50,17 @@ class ReplaceToNanDrop(BaseEstimator, TransformerMixin):
         X['1'] = X['1'].astype(float)
         return X
 
+# columns to imputers
+def get_columns_dtypes(X):
+    '''
+    the dtypes of the columns were be changed after the fill nulls step
+    '''
+    X = ReplaceToNanDrop().fit_transform(X)
+    cats = X.select_dtypes(include=['object']).columns
+    cons = X.select_dtypes(exclude=['object']).columns
+    return {'cats': cats, 'cons': cons}
+
+
 class LabelEncodingTransformer(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         return self
@@ -59,19 +74,6 @@ class LabelEncodingTransformer(BaseEstimator, TransformerMixin):
         return X
 
 
-# columns to imputers
-def get_columns_dtypes(X):
-    '''
-    the dtypes of the columns were be changed after the fill nulls step
-    '''
-    X = ReplaceToNanDrop().fit_transform(X)
-    cats = X.select_dtypes(include=['object']).columns
-    cons = X.select_dtypes(exclude=['object']).columns
-    return {'cats': cats, 'cons': cons}
-
-
-
-
 # %%
 pipe_numeric = Pipeline([("numeric_null", SimpleImputer(missing_values=np.nan, strategy='mean')),
                   ("scaler", MinMaxScaler(feature_range=(0, 1)))])
@@ -83,9 +85,9 @@ preprocessing = ColumnTransformer(
     [("numeric",pipe_numeric ,get_columns_dtypes(X)['cons']),
     ("cats",pipe_cat ,get_columns_dtypes(X)['cats'])])
 
-pipe = Pipeline([('replace_to_nan', ReplaceToNanDrop()),
+pipe = Pipeline([('replace_to_nan_drop', ReplaceToNanDrop()),
                   ('preprocessing', preprocessing),
-                 ('classifir',LogisticRegression(max_iter= 150, tol=0.01))])
+                 ('classifier',LogisticRegression(max_iter= 150, tol=0.01))])
 
 # %%
 # test in cross val score 
@@ -99,9 +101,6 @@ pipe.fit(X,y)
 # %%
 with open("model/model.pkl", "wb") as file:
     pickle.dump(pipe, file)
-
-# %%
-joblib.dump(pipe, 'model/model.joblib')
 
 # %%
 
