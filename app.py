@@ -6,51 +6,48 @@ import pickle
 import joblib
 from model_to_production import *
 
-model = joblib.load('model/model.joblib')
+with open("model/model.pkl", "rb") as file:
+    model = pickle.load(file)
 
-cols=['age','workclass','education','marital-status','occupation','relationship','race','gender','capital-gain','capital-loss',
-      'hours-per-week','native-country']    
-  
 def main(): 
-    st.title("Predicting Credit Card Approvals")
+    st.markdown(f'''<p style="color: green;">note : the values in the dataset have been converted to meaningless symbols
+                 to protect the confidentiality of the data and we do not know them.! <br>
+                in real projects we know them in the deploy phase.</p>''', unsafe_allow_html=True)
     html_temp = """
     <div style="background:#025246 ;padding:10px">
-    <h2 style="color:white;text-align:center;">Income Prediction App </h2>
+    <h2 style="color:white;text-align:center;">Predicting Credit Card Approvals </h2>
     </div>
     """
     st.markdown(html_temp, unsafe_allow_html = True)
     
-    age = st.text_input("Age","0") 
-    workclass = st.selectbox("Working Class", ["Federal-gov","Local-gov","Never-worked","Private","Self-emp-inc","Self-emp-not-inc","State-gov","Without-pay"]) 
-    education = st.selectbox("Education",["10th","11th","12th","1st-4th","5th-6th","7th-8th","9th","Assoc-acdm","Assoc-voc","Bachelors","Doctorate","HS-grad","Masters","Preschool","Prof-school","Some-college"]) 
-    marital_status = st.selectbox("Marital Status",["Divorced","Married-AF-spouse","Married-civ-spouse","Married-spouse-absent","Never-married","Separated","Widowed"]) 
-    occupation = st.selectbox("Occupation",["Adm-clerical","Armed-Forces","Craft-repair","Exec-managerial","Farming-fishing","Handlers-cleaners","Machine-op-inspct","Other-service","Priv-house-serv","Prof-specialty","Protective-serv","Sales","Tech-support","Transport-moving"]) 
-    relationship = st.selectbox("Relationship",["Husband","Not-in-family","Other-relative","Own-child","Unmarried","Wife"]) 
-    race = st.selectbox("Race",["Amer Indian Eskimo","Asian Pac Islander","Black","Other","White"]) 
-    gender = st.selectbox("Gender",["Female","Male"]) 
-    capital_gain = st.text_input("Capital Gain","0") 
-    capital_loss = st.text_input("Capital Loss","0") 
-    hours_per_week = st.text_input("Hours per week","0") 
-    nativecountry = st.selectbox("Native Country",["Cambodia","Canada","China","Columbia","Cuba","Dominican Republic","Ecuador","El Salvadorr","England","France","Germany","Greece","Guatemala","Haiti","Netherlands","Honduras","HongKong","Hungary","India","Iran","Ireland","Italy","Jamaica","Japan","Laos","Mexico","Nicaragua","Outlying-US(Guam-USVI-etc)","Peru","Philippines","Poland","Portugal","Puerto-Rico","Scotland","South","Taiwan","Thailand","Trinadad&Tobago","United States","Vietnam","Yugoslavia"]) 
+    n0 = st.selectbox("0", ['b', 'a'])
+    n1 = st.text_input("1","0") 
+    n2 = st.text_input("2","0") 
+    n3 = st.selectbox("3", ['u', 'y', 'l']) 
+    n4 = st.selectbox("4",['g', 'p', '?', 'gg']) 
+    n5 = st.selectbox("5",['w', 'q', 'm', 'r', 'cc', 'k', 'c', 'd', 'x', 'i', 'e', 'aa', 'ff','j']) 
+    n6 = st.selectbox("6",['v', 'h', 'bb', 'ff', 'j', 'z', 'o', 'dd', 'n']) 
+    n7 = n1 = st.text_input("7","0") 
+    n8 = st.selectbox("8",['t', 'f']) 
+    n9 = st.selectbox("9",['t', 'f']) 
+    n10 = st.text_input("10","0") 
+    n11 = st.selectbox("11",['t', 'f']) 
+    n12 = st.selectbox("12",['g', 's', 'p']) 
+    n13 = st.text_input("13","0") 
+    n14 = st.text_input("14","0") 
     
     if st.button("Predict"): 
-        features = [[age,workclass,education,marital_status,occupation,relationship,race,gender,capital_gain,capital_loss,hours_per_week,nativecountry]]
-        data = {'age': int(age), 'workclass': workclass, 'education': education, 'maritalstatus': marital_status, 'occupation': occupation, 'relationship': relationship, 'race': race, 'gender': gender, 'capitalgain': int(capital_gain), 'capitalloss': int(capital_loss), 'hoursperweek': int(hours_per_week), 'nativecountry': nativecountry}
-        print(data)
-        df=pd.DataFrame([list(data.values())], columns=['age','workclass','education','maritalstatus','occupation','relationship','race','gender','capitalgain','capitalloss','hoursperweek','nativecountry'])
+        features = [[n0,n1,float(n2),n3,n4,n5,n6,float(n7),n8,n9,int(n10),n11,n12,n13,int(n14)]]
+        df=pd.DataFrame(features, columns=list(range(15)))
                 
-        category_col =['workclass', 'education', 'maritalstatus', 'occupation', 'relationship', 'race', 'gender', 'nativecountry']
-     
-        features_list = df.values.tolist()      
-        prediction = model.predict(features_list)
-    
+        prediction = model.predict(df)
         output = int(prediction[0])
         if output == 1:
-            text = ">50K"
+            text = "Congratulations, approval!"
+            st.markdown(f'<p style="color: green;">Approval status {text}</p>', unsafe_allow_html=True)
         else:
-            text = "<=50K"
-
-        st.success('Employee Income is {}'.format(text))
+            text = "Sorry, not approved."
+            st.markdown(f'<p style="color: red;">Approval status {text}</p>', unsafe_allow_html=True)
       
 if __name__=='__main__': 
     main()
