@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python","Predicting-Credit-Card-Approvals.py"]
+CMD ["python","Credit-Card-Approvals.py"]
